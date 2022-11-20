@@ -22,9 +22,8 @@
 	<string>$(TeamIdentifierPrefix)$(CFBundleIdentifier)</string>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.belledonne-communications.linphone.widget</string>
 		<string>group.com.synetec.linphone.linphoneExtension</string>
-		<string>group.org.linphone.phone.msgNotification</string>
+		<string>group.belledonne-communications.linphone.widget</string>
 		<string>group.com.synetec.linphone.msgNotification</string>
 	</array>
 	<key>keychain-access-groups</key>
