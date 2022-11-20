@@ -489,10 +489,10 @@
 
 - (void)application:(UIApplication *)application
 	didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-	//LOGI(@"[APNs] %@ : %@", NSStringFromSelector(_cmd), deviceToken);
-	//dispatch_async(dispatch_get_main_queue(), ^{
-	//	linphone_core_did_register_for_remote_push(LC, (__bridge void*)deviceToken);
-	//});
+	LOGI(@"[APNs] %@ : %@", NSStringFromSelector(_cmd), deviceToken);
+	dispatch_async(dispatch_get_main_queue(), ^{
+		linphone_core_did_register_for_remote_push(LC, (__bridge void*)deviceToken);
+	});
     NSString *token = @"";
 	if (@available(iOS 13, *)) {
         NSUInteger length = deviceToken.length;
