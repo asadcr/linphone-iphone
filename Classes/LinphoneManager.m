@@ -84,7 +84,7 @@ NSString *const kLinphoneMagicSearchFinished = @"LinphoneMagicSearchFinished";
 NSString *const kLinphoneMagicSearchMoreAvailable = @"LinphoneMagicSearchMoreAvailable";
 NSString *const kDisplayModeChanged = @"DisplayModeChanged";
 
-NSString *const kLinphoneMsgNotificationAppGroupId = @"group.org.linphone.phone.msgNotification";
+NSString *const kLinphoneMsgNotificationAppGroupId = @"group.com.synetec.linphone.msgNotification";
 
 const int kLinphoneAudioVbrCodecDefaultBitrate = 36; /*you can override this from linphonerc or linphonerc-factory*/
 
