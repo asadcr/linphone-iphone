@@ -210,6 +210,21 @@ import AVFoundation
 		}
 	}
 
+    func terminatePushReceivedCall() {
+		// This is a hack. Received Push Call is killed and deleted from History. So there is no trace of it.
+        for callInfo in CallManager.instance().providerDelegate.callInfos {
+            let call = CallManager.instance().lc?.getCallByCallid(callId: callInfo.value.callId)
+            if (call != nil && call?.state == .PushIncomingReceived) {
+                Log.i("[Call] Terminating Push Received Call with CallId: \(callInfo.value.callId) and UUID \(callInfo.key)")
+                let transaction = CXTransaction(action: CXEndCallAction(call: callInfo.key))
+                CallManager.instance().requestTransaction(transaction, action: "endCall")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    CallManager.instance().lc?.removeCallLog(callLog: call!.callLog!)
+                }
+            }
+        }
+    }
+	
 	func displayIncomingCall(call:Call?, handle: String, hasVideo: Bool, callId: String, displayName:String) {
 		let uuid = UUID()
 		let callInfo = CallInfo.newIncomingCallInfo(callId: callId)
@@ -578,6 +593,7 @@ import AVFoundation
 							CallManager.instance().providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: video, displayName: displayName)
 						} else {
 							CallManager.instance().displayIncomingCall(call: call, handle: addr!.asStringUriOnly(), hasVideo: video, callId: callId!, displayName: displayName)
+                            CallManager.instance().terminatePushReceivedCall()
 						}
 					} else if (UIApplication.shared.applicationState != .active) {
 						// not support callkit , use notif
