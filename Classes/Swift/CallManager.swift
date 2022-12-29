@@ -224,8 +224,41 @@ import AVFoundation
             }
         }
     }
-	
-	func displayIncomingCall(call:Call?, handle: String, hasVideo: Bool, callId: String, displayName:String) {
+    
+    @objc func createMissedCallEntry(fromAddress: OpaquePointer?, toAddress: OpaquePointer?, startTime: NSString?) {
+        if (fromAddress == nil) {
+            Log.directLog(BCTBX_LOG_ERROR, text: "fromAddress is null, cannot proceed!")
+            return
+        }
+        if (toAddress == nil) {
+            Log.directLog(BCTBX_LOG_ERROR, text: "toAddress is null, cannot proceed!")
+            return
+        }
+
+        let from = Address.getSwiftObject(cObject: fromAddress!)
+        let to = Address.getSwiftObject(cObject: toAddress!)
+        
+        do {
+            print(startTime);
+            let formatter = ISO8601DateFormatter()
+                formatter.formatOptions = [.withInternetDateTime,
+                                           .withDashSeparatorInDate,
+                                           .withFullDate,
+                                           .withFractionalSeconds,
+                                           .withColonSeparatorInTimeZone]
+            guard let date = formatter.date(from: startTime! as String) else {
+                Log.directLog(BCTBX_LOG_ERROR, text: "startTime is not valid, cannot proceed!")
+                return
+            }
+
+            var connectedTime = date.timeIntervalSince1970
+            try CallManager.instance().lc?.createCallLog(from: from, to: to, dir: Call.Dir.Incoming, duration: 0, startTime: time_t(date.timeIntervalSince1970), connectedTime: time_t(connectedTime), status: Call.Status.Missed, videoEnabled: false, quality: 0)
+        } catch {
+            print(error)
+        }
+    }
+    
+    func displayIncomingCall(call:Call?, handle: String, hasVideo: Bool, callId: String, displayName:String) {
 		let uuid = UUID()
 		let callInfo = CallInfo.newIncomingCallInfo(callId: callId)
 

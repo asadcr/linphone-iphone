@@ -553,7 +553,22 @@
 }
 
 -(void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-	
+    [LinphoneManager.instance startLinphoneCore];
+    [LinphoneManager.instance.fastAddressBook reloadFriends];
+
+    NSString *fromAddress = (NSString *)[userInfo objectForKey:@"fromAddress"];
+    if(fromAddress) {
+        NSString *toAddress = (NSString *)[userInfo objectForKey:@"toAddress"];
+        NSString *startTime = (NSString *)[userInfo objectForKey:@"startTime"];
+        LinphoneAddress *from = linphone_address_new(fromAddress.UTF8String);
+        LinphoneAddress *to = linphone_address_new(toAddress.UTF8String);
+
+        [CallManager.instance createMissedCallEntryFromAddress:from toAddress:to startTime:startTime];
+
+        linphone_address_unref(from);
+        linphone_address_unref(to);
+        return;
+    }
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
