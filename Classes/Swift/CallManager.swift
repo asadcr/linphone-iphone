@@ -582,6 +582,41 @@ import AVFoundation
 			return FastAddressBook.displayName(for: call.remoteAddress?.getCobject) ?? "Unknown"
 		}
 	}
+    
+    func onPushNotificationReceived(core: Core, payload: String) {
+        guard let fromUri = parsePropertyFromString(jsonString: payload, pattern: "fromUri\\s*=\\s+([0-9]+)") else {
+            return
+        }
+        
+        guard let callId = parsePropertyFromString(jsonString: payload, pattern: "callId\\s*=\\s+(.*?);") else {
+            return
+        }
+        
+        guard let uuid = CallManager.instance().providerDelegate.uuids[callId] else {
+            return
+        }
+        
+        CallManager.instance().providerDelegate.updateCall(uuid: uuid, handle: fromUri, hasVideo: false, displayName: "")
+    }
+    
+    func parsePropertyFromString(jsonString: String, pattern: String) -> String? {
+        guard let regex = try? NSRegularExpression(pattern: pattern) else {
+            return nil
+        }
+
+        guard let match = regex.firstMatch(in: jsonString, options: [], range: NSRange(location: 0, length: jsonString.utf16.count)) else {
+            return nil
+        }
+
+        let range = match.range(at: 1)
+        let startIndex = jsonString.index(jsonString.startIndex, offsetBy: range.location)
+        let endIndex = jsonString.index(startIndex, offsetBy: range.length)
+        let swiftRange = startIndex..<endIndex
+
+        return String(jsonString[swiftRange])
+    }
+
+    //fromUri
 
 	func onCallStateChanged(core: Core, call: Call, state cstate: Call.State, message: String) {
 		let callLog = call.callLog
